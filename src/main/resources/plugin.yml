@@ -8,6 +8,6 @@ authors: [ Renato, Hrvoje ]
 commands:
   inventory:
     description: "test description"
-    usage: "/menu"
+    usage: "/inventory"
     permission: "op"
     permission-message: "You do not have permission"

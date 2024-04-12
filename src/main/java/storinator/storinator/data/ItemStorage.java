@@ -5,18 +5,26 @@ import org.bukkit.inventory.ItemStack;
 import java.util.List;
 
 public class ItemStorage {
-   private List<ItemStack> items;
+   private List<MyItemStack> items;
 
 
-    public ItemStorage(List<ItemStack> items) {
+    public ItemStorage(List<MyItemStack> items) {
         this.items = items;
     }
 
-    public List<ItemStack> getItems() {
+    public List<MyItemStack> getItems() {
         return items;
     }
 
-    public void setItems(List<ItemStack> items) {
+    public ItemStack getItem(int index){
+        return items.get(index);
+    }
+
+    public List<MyItemStack> getItems(int start, int end){
+        return items.subList(start, end);
+    }
+
+    public void setItems(List<MyItemStack> items) {
         this.items = items;
     }
 }

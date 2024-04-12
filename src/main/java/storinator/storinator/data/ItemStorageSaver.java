@@ -1,7 +1,6 @@
 package storinator.storinator.data;
 
 import org.bukkit.Bukkit;
-import org.bukkit.inventory.ItemStack;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -30,7 +29,7 @@ public class ItemStorageSaver {
                 if (!created) return false;
 
                 FileWriter fw = new FileWriter(saveFile);
-                for (ItemStack stack : storage.getItems()) {
+                for (MyItemStack stack : storage.getItems()) {
                     fw.write(stack.toString() + "\n");
                 }
 
