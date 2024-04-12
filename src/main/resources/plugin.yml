@@ -4,3 +4,10 @@ main: storinator.storinator.Storinator
 api-version: 1.20
 prefix: storinator
 authors: [ Renato, Hrvoje ]
+
+commands:
+  inventory:
+    description: "test description"
+    usage: "/menu"
+    permission: "op"
+    permission-message: "You do not have permission"
