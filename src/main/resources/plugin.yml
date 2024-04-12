@@ -1,0 +1,6 @@
+name: Storinator
+version: '${project.version}'
+main: storinator.storinator.Storinator
+api-version: 1.20
+prefix: storinator
+authors: [ Renato, Hrvoje ]
