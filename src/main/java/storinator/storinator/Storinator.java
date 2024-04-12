@@ -1,27 +1,22 @@
 package storinator.storinator;
 
+import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
-
-import java.util.logging.Logger;
 
 
 public final class Storinator extends JavaPlugin {
-    private final Logger logger;
-    public Storinator(Logger logger) {
-        this.logger = logger;
-    }
+
 
     @Override
     public void onEnable() {
         // Plugin startup logic
 
-       logger.info("Hello world");
+        Bukkit.getLogger().info("Storinator is enabled");
 
     }
 
     @Override
     public void onDisable() {
-        // Plugin shutdown logic
-        logger.info("Goodbye cruel world.");
+        Bukkit.getLogger().info("Storinator is disabled");
     }
 }

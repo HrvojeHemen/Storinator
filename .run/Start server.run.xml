@@ -5,6 +5,10 @@
     <option name="PROGRAM_PARAMETERS" value="--nogui" />
     <option name="WORKING_DIRECTORY" value="D:\CodingFolder\IntellijProjects\StorinatorJava\server" />
     <option name="ALTERNATIVE_JRE_PATH" />
-    <method v="2" />
+    <method v="2">
+      <option name="BuildArtifacts" enabled="true">
+        <artifact name="Storinator:jar" />
+      </option>
+    </method>
   </configuration>
 </component>
