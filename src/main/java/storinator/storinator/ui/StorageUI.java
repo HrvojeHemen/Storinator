@@ -125,10 +125,10 @@ public class StorageUI implements Listener, CommandExecutor {
     }
 
     private void displayInventory(Inventory inventory, Player player, int page) {
-        var items = getPaginated(itemStorage, page, ITEMS_PER_PAGE);
+        var items = getPaginated(itemStorage, page);
         int index = 9;
         setNavigation(inventory);
-        setItems(inventory, items, index, TOTAL_INVENTORY_SLOTS);
+        setItems(inventory, items, index);
         player.openInventory(inventory);
     }
 
@@ -142,7 +142,7 @@ public class StorageUI implements Listener, CommandExecutor {
         }
     }
 
-    private void setItems(Inventory inventory, List<MyItemStack> items, int startIndex, int maxIndex) {
+    private void setItems(Inventory inventory, List<MyItemStack> items, int startIndex) {
         for (var item : items) {
             List<Component> lore = new ArrayList<>();
             lore.add(Component.text().content(item.getCount() + "").build());
@@ -150,15 +150,15 @@ public class StorageUI implements Listener, CommandExecutor {
 
             inventory.setItem(startIndex++, item);
 //            storinator.getLogger().info("[" + startIndex + "] = " + item + "x" + item.getCount());
-            if (startIndex >= maxIndex) {
+            if (startIndex >= TOTAL_INVENTORY_SLOTS) {
                 return;
             }
         }
     }
 
-    List<MyItemStack> getPaginated(ItemStorage itemStorage, int page, int perPage) {
+    List<MyItemStack> getPaginated(ItemStorage itemStorage, int page) {
 //        storinator.getLogger().info("Getting page " + page + " of " + perPage + " " + page * perPage + " -> " + (page + 1) * perPage);
-        var items = itemStorage.getItems(page * perPage, (page + 1) * perPage);
+        var items = itemStorage.getItems(page * StorageUI.ITEMS_PER_PAGE, (page + 1) * StorageUI.ITEMS_PER_PAGE);
 //        storinator.getLogger().info("Found " + items.size() + " items");
         return items;
     }
