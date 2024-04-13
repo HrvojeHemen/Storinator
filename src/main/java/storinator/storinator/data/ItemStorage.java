@@ -16,7 +16,7 @@ public class ItemStorage {
         return items;
     }
 
-    public ItemStack getItem(int index) {
+    public MyItemStack getItem(int index) {
         return items.get(index);
     }
 
