@@ -1,7 +1,5 @@
 package storinator.storinator.data;
 
-import org.bukkit.inventory.ItemStack;
-
 import java.util.Comparator;
 import java.util.List;
 
