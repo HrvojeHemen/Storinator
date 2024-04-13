@@ -1,19 +1,26 @@
 package storinator.storinator.data;
 
-import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import storinator.storinator.Storinator;
 
 import java.io.File;
 import java.util.*;
 
 public class ItemStorageLoader {
+    Storinator storinator;
 
-    public static Map<String, ItemStorage> loadExistingStorages(File directory) {
+    public ItemStorageLoader(Storinator storinator) {
+        this.storinator = storinator;
+    }
+
+    public Map<String, ItemStorage> loadExistingStorages(File directory) {
         Util.createDataFolderIfNotExists(directory);
         Map<String, ItemStorage> storages = new HashMap<>();
         for (File file : Objects.requireNonNull(directory.listFiles())) {
             if (file.isFile()) {
-                Bukkit.getLogger().info("Loading " + file.getName()); // maknut ovaj log il nekak povezat na logger or plugina bas
+                storinator.getLogger().info("Loading " + file.getName());
+
+                //TODO load impl
             }
         }
         storages.put("1", getDummyStorage());
@@ -21,7 +28,7 @@ public class ItemStorageLoader {
     }
 
 
-    private static ItemStorage getDummyStorage(){
+    private ItemStorage getDummyStorage(){
         List<MyItemStack> items = new ArrayList<>();
         var allBlocks = Material.values();
         for (int i = 0; i < 500; i++) {

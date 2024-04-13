@@ -1,6 +1,7 @@
 package storinator.storinator.data;
 
 import org.bukkit.Bukkit;
+import storinator.storinator.Storinator;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -10,18 +11,24 @@ import java.util.Map;
 
 public class ItemStorageSaver {
 
-    public static void saveStorages(Map<String, ItemStorage> storages, File directory) {
+    private Storinator storinator;
+
+    public ItemStorageSaver(Storinator storinator) {
+        this.storinator = storinator;
+    }
+
+    public void saveStorages(Map<String, ItemStorage> storages, File directory) {
         Util.createDataFolderIfNotExists(directory);
 
         for (Map.Entry<String, ItemStorage> entry : storages.entrySet()) {
             boolean saved = saveStorage(entry.getKey(), entry.getValue(), directory);
             if (!saved) {
-                Bukkit.getLogger().info("Could not save storage " + entry.getKey()); // isto ko za onaj drugi Bukkit.getLogger
+                storinator.getLogger().info("Could not save storage " + entry.getKey());
             }
         }
     }
 
-    private static boolean saveStorage(String storageName, ItemStorage storage, File directory) {
+    private boolean saveStorage(String storageName, ItemStorage storage, File directory) {
         File saveFile = new File(directory, storageName);
         if (!saveFile.exists()) {
             try {
@@ -30,7 +37,7 @@ public class ItemStorageSaver {
 
                 FileWriter fw = new FileWriter(saveFile);
                 for (MyItemStack stack : storage.getItems()) {
-                    fw.write(stack.toString() + "\n");
+                   //TODO saving impl
                 }
 
                 fw.close();
