@@ -49,38 +49,39 @@ public class StorageUI implements Listener, CommandExecutor {
 
         int slot = event.getSlot();
         int rawSlot = event.getRawSlot();
-
+        boolean updated;
         if(event.getView().getBottomInventory().equals(event.getClickedInventory())) {
-            handlePlayerInventoryClick(event, slot, rawSlot);
+            updated = handlePlayerInventoryClick(event, slot, rawSlot);
         }
         else if(event.getView().getTopInventory().equals(event.getClickedInventory())) {
-            handleStorinatorInventoryClick(event, slot, rawSlot);
+            updated  = handleStorinatorInventoryClick(event, slot, rawSlot);
         }
         else {
             storinator.getLogger().severe("Unknown inventory: " + event.getClickedInventory());
             return;
         }
 
-        displayInventory(event.getInventory(), player, currentPage);
+        if (updated) displayInventory(event.getInventory(), player, currentPage);
     }
 
-    private void handlePlayerInventoryClick(InventoryClickEvent event, int slot, int rawSlot){
+    private boolean handlePlayerInventoryClick(InventoryClickEvent event, int slot, int rawSlot){
         storinator.getLogger().info("Player inventory click");
         if(!event.isShiftClick()){
-            return;
+            return false;
         }
 
-        Inventory playerInventory =  event.getView().getInventory(rawSlot);
-        if(playerInventory == null) return;
+        Inventory playerInventory = event.getView().getInventory(rawSlot);
+        if(playerInventory == null) return false;
 
         ItemStack itemsAtIndex = playerInventory.getItem(slot);
-        if(itemsAtIndex == null) return;
+        if(itemsAtIndex == null) return false;
 
         event.setCancelled(true);
         playerInventory.removeItem(itemsAtIndex);
+        return true;
     }
 
-    private void handleStorinatorInventoryClick(InventoryClickEvent event, int slot, int rawSlot){
+    private boolean handleStorinatorInventoryClick(InventoryClickEvent event, int slot, int rawSlot){
         storinator.getLogger().info("Storinator inventory click");
         event.setCancelled(true);
         // NAVIGATION BAR
@@ -91,9 +92,7 @@ public class StorageUI implements Listener, CommandExecutor {
                     int lastPage = itemStorage.getItems().size() % ITEMS_PER_PAGE;
                     currentPage = Integer.min(currentPage + 1, lastPage);
                 }
-                case SORT_BY_AMOUNT_INDEX -> {
-                    sortItemsByAmount(itemStorage);
-                }
+                case SORT_BY_AMOUNT_INDEX -> sortItemsByAmount(itemStorage);
             }
         }
         //ITEM CLICKS
@@ -106,6 +105,8 @@ public class StorageUI implements Listener, CommandExecutor {
             //TODO this is behaving a bit weird sometimes, check it out
             event.getView().getBottomInventory().addItem(toGivePlayer);
         }
+
+        return true;
     }
 
     @Override
