@@ -5,9 +5,11 @@ import java.util.List;
 
 public class ItemStorage {
     private List<MyItemStack> items;
+    private Comparator<MyItemStack> currentComparator;
 
     public ItemStorage(List<MyItemStack> items) {
         this.items = items;
+        currentComparator = BY_COUNT;
     }
 
     public List<MyItemStack> getItems() {
@@ -27,8 +29,18 @@ public class ItemStorage {
     }
 
     public void sort(Comparator<MyItemStack> comparator) {
-        items.sort(comparator);
+        currentComparator = comparator;
+        items.sort(currentComparator);
     }
 
-    public static Comparator<MyItemStack> BY_AMOUNT = Comparator.comparingInt(MyItemStack::getCount);
+    public void sortByActiveComparator() {
+        items.sort(currentComparator);
+    }
+
+    public void removeItemStack(MyItemStack itemStack) {
+        items.remove(itemStack);
+    }
+
+    public static Comparator<MyItemStack> BY_COUNT = Comparator.comparing(MyItemStack::getCount);
+    public static Comparator<MyItemStack> BY_COUNT_REVERSED = BY_COUNT.reversed();
 }

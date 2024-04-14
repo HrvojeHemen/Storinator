@@ -21,7 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class StorageUI implements Listener, CommandExecutor {
-    private Storinator storinator;
+    private final Storinator storinator;
     private ItemStorage itemStorage;
     private Inventory inventory;
     private int currentPage;
@@ -29,7 +29,7 @@ public class StorageUI implements Listener, CommandExecutor {
     private static final String INVENTORY_NAME = "Storinator";
     private static final int PREVIOUS_PAGE_INDEX = 0;
     private static final int NEXT_PAGE_INDEX = 1;
-    private static final int SORT_BY_AMOUNT_INDEX = 2;
+    private static final int SORT_BY_COUNT_INDEX = 2;
     private static final int ITEMS_PER_ROW = 9;
     private static final int TOTAL_ROWS = 6;
     private static final int TOTAL_INVENTORY_SLOTS = ITEMS_PER_ROW * TOTAL_ROWS;
@@ -38,6 +38,21 @@ public class StorageUI implements Listener, CommandExecutor {
     public StorageUI(Storinator storinator) {
         this.storinator = storinator;
         Bukkit.getPluginManager().registerEvents(this, storinator);
+    }
+
+    @Override
+    public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
+        if (!(sender instanceof Player player)) {
+            sender.sendMessage("This command can only be executed by a player");
+            return true;
+        }
+        String storageId = "1";
+        setCurrentPage(0);
+        itemStorage = Storinator.itemStorages.get(storageId);
+        inventory = Bukkit.createInventory(player, TOTAL_INVENTORY_SLOTS, Component.text(INVENTORY_NAME + "#" + storageId + ", Page " + (currentPage + 1)));
+
+        displayInventory(inventory, player, currentPage);
+        return true;
     }
 
     @EventHandler
@@ -50,13 +65,11 @@ public class StorageUI implements Listener, CommandExecutor {
         int slot = event.getSlot();
         int rawSlot = event.getRawSlot();
         boolean updated;
-        if(event.getView().getBottomInventory().equals(event.getClickedInventory())) {
+        if (event.getView().getBottomInventory().equals(event.getClickedInventory())) {
             updated = handlePlayerInventoryClick(event, slot, rawSlot);
-        }
-        else if(event.getView().getTopInventory().equals(event.getClickedInventory())) {
-            updated  = handleStorinatorInventoryClick(event, slot, rawSlot);
-        }
-        else {
+        } else if (event.getView().getTopInventory().equals(event.getClickedInventory())) {
+            updated = handleStorinatorInventoryClick(event, slot, rawSlot);
+        } else {
             storinator.getLogger().severe("Unknown inventory: " + event.getClickedInventory());
             return;
         }
@@ -64,64 +77,65 @@ public class StorageUI implements Listener, CommandExecutor {
         if (updated) displayInventory(event.getInventory(), player, currentPage);
     }
 
-    private boolean handlePlayerInventoryClick(InventoryClickEvent event, int slot, int rawSlot){
+    private boolean handlePlayerInventoryClick(InventoryClickEvent event, int slot, int rawSlot) {
         storinator.getLogger().info("Player inventory click");
-        if(!event.isShiftClick()){
+        if (!event.isShiftClick()) {
             return false;
         }
 
         Inventory playerInventory = event.getView().getInventory(rawSlot);
-        if(playerInventory == null) return false;
+        if (playerInventory == null) return false;
 
         ItemStack itemsAtIndex = playerInventory.getItem(slot);
-        if(itemsAtIndex == null) return false;
+        if (itemsAtIndex == null) return false;
 
         event.setCancelled(true);
-        playerInventory.removeItem(itemsAtIndex);
+        playerInventory.setItem(slot, null);
         return true;
     }
 
-    private boolean handleStorinatorInventoryClick(InventoryClickEvent event, int slot, int rawSlot){
+    private boolean handleStorinatorInventoryClick(InventoryClickEvent event, int slot, int rawSlot) {
         storinator.getLogger().info("Storinator inventory click");
         event.setCancelled(true);
         // NAVIGATION BAR
-        if(rawSlot < ITEMS_PER_ROW) {
+        if (rawSlot < ITEMS_PER_ROW) {
             switch (rawSlot) {
-                case PREVIOUS_PAGE_INDEX -> currentPage = Integer.max(currentPage - 1, 0);
+                case PREVIOUS_PAGE_INDEX -> setCurrentPage(Integer.max(currentPage - 1, 0));
                 case NEXT_PAGE_INDEX -> {
-                    int lastPage = itemStorage.getItems().size() % ITEMS_PER_PAGE;
-                    currentPage = Integer.min(currentPage + 1, lastPage);
+                    int lastPage = itemStorage.getItems().size() / ITEMS_PER_PAGE;
+                    storinator.getLogger().info(itemStorage.getItems().size() + " " + ITEMS_PER_PAGE + " " + lastPage);
+                    setCurrentPage(Integer.min(currentPage + 1, lastPage));
                 }
-                case SORT_BY_AMOUNT_INDEX -> sortItemsByAmount(itemStorage);
+                case SORT_BY_COUNT_INDEX -> sortItemsByCountDesc(itemStorage);
             }
         }
         //ITEM CLICKS
         else {
             storinator.getLogger().info("Giving player item at slot " + rawSlot);
             MyItemStack itemStack = itemStorage.getItem(currentPage * ITEMS_PER_PAGE + rawSlot - ITEMS_PER_ROW);
+            int count = itemStack.getCount();
+            int countPlayerGets = Integer.min(itemStack.getMaxStackSize(), count);
 
-            ItemStack toGivePlayer = new ItemStack(itemStack.getType(), 64);
+            if (count == countPlayerGets) {
+                itemStorage.removeItemStack(itemStack);
+            } else {
+                itemStack.setCount(count - countPlayerGets);
+                itemStorage.sortByActiveComparator();
+            }
 
-            //TODO this is behaving a bit weird sometimes, check it out
+            ItemStack toGivePlayer = new ItemStack(itemStack.getType(), countPlayerGets);
+
+            //TODO this is behaving a bit weird, it prefers hotbar instead of inv, make it prefer inventory,
+            // index 0 is hot bar, index 9 is top left of player inv, check it out
             event.getView().getBottomInventory().addItem(toGivePlayer);
         }
 
         return true;
     }
 
-    @Override
-    public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
-        if (!(sender instanceof Player player)) {
-            sender.sendMessage("This command can only be executed by a player");
-            return true;
-        }
-        String storageId = "1";
-        currentPage = 0;
-        itemStorage = Storinator.itemStorages.get(storageId);
-        inventory = Bukkit.createInventory(player, TOTAL_INVENTORY_SLOTS, Component.text(INVENTORY_NAME + "#" + storageId + ", Page " + (currentPage + 1)));
-
-        displayInventory(inventory, player, currentPage);
-        return true;
+    private void setCurrentPage(int newCurrentPage) {
+        storinator.getLogger().info("Changing current page " + currentPage + " -> " + newCurrentPage);
+        currentPage = newCurrentPage;
     }
 
     private void displayInventory(Inventory inventory, Player player, int page) {
@@ -132,14 +146,22 @@ public class StorageUI implements Listener, CommandExecutor {
         player.openInventory(inventory);
     }
 
-    private void sortItemsByAmount(ItemStorage itemStorage) {
-        itemStorage.sort(ItemStorage.BY_AMOUNT);
+    private void sortItemsByCountDesc(ItemStorage itemStorage) {
+        itemStorage.sort(ItemStorage.BY_COUNT_REVERSED);
     }
 
     private void setNavigation(Inventory inventory) {
-        for (int i = 0; i < 9; i++) {
-            inventory.setItem(i, new MyItemStack(Material.GLASS_PANE, 1));
-        }
+        inventory.setItem(PREVIOUS_PAGE_INDEX, getNavigationButton("Previous Page"));
+        inventory.setItem(NEXT_PAGE_INDEX, getNavigationButton("Next Page"));
+        inventory.setItem(SORT_BY_COUNT_INDEX, getNavigationButton("Sort by count desc."));
+    }
+
+    private ItemStack getNavigationButton(String text) {
+        ItemStack itemStack = new ItemStack(Material.GLASS_PANE);
+        var meta = itemStack.getItemMeta();
+        meta.displayName(Component.text().content(text).build());
+        itemStack.setItemMeta(meta);
+        return itemStack;
     }
 
     private void setItems(Inventory inventory, List<MyItemStack> items, int startIndex) {
@@ -149,17 +171,18 @@ public class StorageUI implements Listener, CommandExecutor {
             item.lore(lore); //TODO check if there is a case where item lore exists, and this over writes is
 
             inventory.setItem(startIndex++, item);
-//            storinator.getLogger().info("[" + startIndex + "] = " + item + "x" + item.getCount());
             if (startIndex >= TOTAL_INVENTORY_SLOTS) {
-                return;
+                break;
             }
+        }
+
+        //not enough items left, so we set remaining storage slots to null
+        for (int i = startIndex; i < TOTAL_INVENTORY_SLOTS; i++) {
+            inventory.setItem(i, null);
         }
     }
 
     List<MyItemStack> getPaginated(ItemStorage itemStorage, int page) {
-//        storinator.getLogger().info("Getting page " + page + " of " + perPage + " " + page * perPage + " -> " + (page + 1) * perPage);
-        var items = itemStorage.getItems(page * StorageUI.ITEMS_PER_PAGE, (page + 1) * StorageUI.ITEMS_PER_PAGE);
-//        storinator.getLogger().info("Found " + items.size() + " items");
-        return items;
+        return itemStorage.getItems(page * StorageUI.ITEMS_PER_PAGE, Integer.min((page + 1) * StorageUI.ITEMS_PER_PAGE, itemStorage.getItems().size()));
     }
 }
