@@ -90,6 +90,10 @@ public class StorageUI implements Listener, CommandExecutor {
         if (itemsAtIndex == null) return false;
 
         event.setCancelled(true);
+
+        MyItemStack itemStack = new MyItemStack(itemsAtIndex);
+        itemStorage.addItem(itemStack);
+
         playerInventory.setItem(slot, null);
         return true;
     }
@@ -125,8 +129,11 @@ public class StorageUI implements Listener, CommandExecutor {
 
             ItemStack toGivePlayer = new ItemStack(itemStack.getType(), countPlayerGets);
 
-            //TODO this is behaving a bit weird, it prefers hotbar instead of inv, make it prefer inventory,
-            // index 0 is hot bar, index 9 is top left of player inv, check it out
+            //TODO this is behaving a bit weird, it prefers hotbar instead of inv, make it prefer inventory, index 0 is hot bar, index 9 is top left of player inv, check it out
+
+            //TODO check if player inventory has empty space for items
+
+
             event.getView().getBottomInventory().addItem(toGivePlayer);
         }
 
@@ -164,13 +171,17 @@ public class StorageUI implements Listener, CommandExecutor {
         return itemStack;
     }
 
-    private void setItems(Inventory inventory, List<MyItemStack> items, int startIndex) {
-        for (var item : items) {
+    private void setItems(Inventory inventory, final List<MyItemStack> items, int startIndex) {
+        for (final var item : items) {
+
+            //we copy this, so we don't lose some metadata in the storage
+            MyItemStack copyForUI = new MyItemStack(item);
+
             List<Component> lore = new ArrayList<>();
             lore.add(Component.text().content(item.getCount() + "").build());
-            item.lore(lore); //TODO check if there is a case where item lore exists, and this over writes is
+            copyForUI.lore(lore); //TODO check if there is a case where item lore exists, and this over writes is
 
-            inventory.setItem(startIndex++, item);
+            inventory.setItem(startIndex++, copyForUI);
             if (startIndex >= TOTAL_INVENTORY_SLOTS) {
                 break;
             }

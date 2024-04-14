@@ -24,8 +24,16 @@ public class ItemStorage {
         return items.subList(start, end);
     }
 
-    public void setItems(List<MyItemStack> items) {
-        this.items = items;
+    public void addItem(MyItemStack item) {
+        for (MyItemStack itemStack : items) {
+            if (itemStack.isSimilar(item)) {
+                itemStack.setCount(itemStack.getCount() + item.getCount());
+                sortByActiveComparator();
+                return;
+            }
+        }
+        items.add(item);
+        sortByActiveComparator();
     }
 
     public void sort(Comparator<MyItemStack> comparator) {
