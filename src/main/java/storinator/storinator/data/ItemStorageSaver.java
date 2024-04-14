@@ -5,7 +5,6 @@ import storinator.storinator.Storinator;
 
 import java.io.File;
 import java.io.FileWriter;
-import java.io.IOException;
 import java.util.Map;
 
 @RequiredArgsConstructor
@@ -17,32 +16,22 @@ public class ItemStorageSaver {
         Util.createDataFolderIfNotExists(directory);
 
         for (Map.Entry<String, ItemStorage> entry : storages.entrySet()) {
-            boolean saved = saveStorage(entry.getKey(), entry.getValue(), directory);
-            if (!saved) {
-                storinator.getLogger().info("Could not save storage " + entry.getKey());
-            }
+            saveStorage(entry.getKey(), entry.getValue(), directory);
         }
     }
 
-    private boolean saveStorage(String storageName, ItemStorage storage, File directory) {
+    private void saveStorage(String storageName, ItemStorage storage, File directory) {
         File saveFile = new File(directory, storageName);
-        if (!saveFile.exists()) {
-            try {
-                boolean created = saveFile.createNewFile();
-                if (!created) return false;
+        try {
 
-                FileWriter fw = new FileWriter(saveFile);
-                for (MyItemStack stack : storage.getItems()) {
-                   //TODO saving impl
-                }
+            String base64 = Util.serializeToBase64(storage.getItems());
 
-                fw.close();
+            FileWriter fw = new FileWriter(saveFile);
+            fw.write(base64);
+            fw.close();
 
-            } catch (IOException e) {
-                return false;
-            }
+        } catch (Exception e) {
+            storinator.getLogger().severe("Could not save storage " + e);
         }
-
-        return true;
     }
 }

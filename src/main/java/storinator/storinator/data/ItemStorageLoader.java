@@ -17,12 +17,32 @@ public class ItemStorageLoader {
         Map<String, ItemStorage> storages = new HashMap<>();
         for (File file : Objects.requireNonNull(directory.listFiles())) {
             if (file.isFile()) {
-                storinator.getLogger().info("Loading " + file.getName());
+                try {
+                    ItemStorage itemStorage = new ItemStorage();
 
-                //TODO load impl
+                    Scanner scanner = new Scanner(file.toPath());
+                    StringBuilder data = new StringBuilder();
+                    while (scanner.hasNextLine()) {
+                        data.append(scanner.nextLine().strip());
+                    }
+
+
+                   MyItemStack[] itemStacks =  Util.deserializeFromBase64(data.toString());
+
+                    for (MyItemStack itemStack : itemStacks) {
+                        itemStorage.addItem(itemStack);
+                    }
+
+                    storages.put(file.getName(), itemStorage);
+
+
+                } catch (Exception e) {
+                    storinator.getLogger().severe("Error loading " + file.getName() + " " + e.getMessage());
+                }
+
             }
         }
-        storages.put("1", getDummyStorage());
+//        storages.put("1", getDummyStorage());
         return storages;
     }
 
@@ -31,11 +51,10 @@ public class ItemStorageLoader {
         var allBlocks = Material.values();
         for (int i = 0; i < 500; i++) {
             var block = allBlocks[new Random().nextInt(allBlocks.length)];
-            if(block.isItem()){
+            if (block.isItem()) {
                 items.add(new MyItemStack(block, i * 10));
-            }
-            else{
-                i --;
+            } else {
+                i--;
             }
         }
         return new ItemStorage(items);

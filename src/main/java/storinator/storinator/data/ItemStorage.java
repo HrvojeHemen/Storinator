@@ -2,6 +2,7 @@ package storinator.storinator.data;
 
 import lombok.Getter;
 
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
@@ -12,6 +13,11 @@ public class ItemStorage {
 
     private final List<MyItemStack> items;
     private Comparator<MyItemStack> currentComparator = BY_COUNT.getComparator();
+
+
+    public ItemStorage(){
+        this(new ArrayList<>());
+    }
 
     public ItemStorage(List<MyItemStack> items) {
         this.items = items;
