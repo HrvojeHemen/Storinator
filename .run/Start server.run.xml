@@ -3,7 +3,7 @@
     <option name="JAR_PATH" value="$PROJECT_DIR$/server/paper-1.20.4-478.jar" />
     <option name="VM_PARAMETERS" value="-Xmx4G -Xms4G" />
     <option name="PROGRAM_PARAMETERS" value="--nogui" />
-    <option name="WORKING_DIRECTORY" value="D:\CodingFolder\IntellijProjects\StorinatorJava\server" />
+    <option name="WORKING_DIRECTORY" value="$ProjectFileDir$/server" />
     <option name="ALTERNATIVE_JRE_PATH" />
     <method v="2">
       <option name="BuildArtifacts" enabled="true">
