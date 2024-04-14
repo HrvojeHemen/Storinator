@@ -13,8 +13,10 @@ import java.util.Objects;
 public final class Storinator extends JavaPlugin {
 
     public static Map<String, ItemStorage> itemStorages;
+
     private ItemStorageLoader itemStorageLoader;
     private ItemStorageSaver itemStorageSaver;
+
     @Override
     public void onEnable() {
         // Plugin startup logic
@@ -22,13 +24,10 @@ public final class Storinator extends JavaPlugin {
         itemStorageSaver = new ItemStorageSaver(this);
         Objects.requireNonNull(getCommand("inventory")).setExecutor(new StorageUI(this));
 
-
         getLogger().info("Loading storages");
         itemStorages = itemStorageLoader.loadExistingStorages(this.getDataFolder());
         getLogger().info("Loaded storages");
-
     }
-
 
     @Override
     public void onDisable() {

@@ -1,6 +1,6 @@
 package storinator.storinator.data;
 
-import org.bukkit.Bukkit;
+import lombok.RequiredArgsConstructor;
 import storinator.storinator.Storinator;
 
 import java.io.File;
@@ -8,14 +8,10 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Map;
 
-
+@RequiredArgsConstructor
 public class ItemStorageSaver {
 
-    private Storinator storinator;
-
-    public ItemStorageSaver(Storinator storinator) {
-        this.storinator = storinator;
-    }
+    private final Storinator storinator;
 
     public void saveStorages(Map<String, ItemStorage> storages, File directory) {
         Util.createDataFolderIfNotExists(directory);

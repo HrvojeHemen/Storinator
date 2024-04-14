@@ -1,19 +1,18 @@
 package storinator.storinator.data;
 
-import org.bukkit.Bukkit;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
-import java.util.Objects;
-
+@Getter
+@Setter
+@EqualsAndHashCode(callSuper = true)
 public class MyItemStack extends ItemStack {
-    private int count;
 
-    public MyItemStack(int count) {
-        this.count = count;
-    }
+    private int count;
 
     public MyItemStack(MyItemStack myItemStack) {
         super(myItemStack);
@@ -31,17 +30,4 @@ public class MyItemStack extends ItemStack {
         this.setAmount(1);
     }
 
-    public int getCount() {
-        return count;
-    }
-
-    public void setCount(int count) {
-        this.count = count;
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(super.hashCode(), count);
-    }
 }
-

@@ -1,17 +1,16 @@
 package storinator.storinator.data;
 
+import lombok.RequiredArgsConstructor;
 import org.bukkit.Material;
 import storinator.storinator.Storinator;
 
 import java.io.File;
 import java.util.*;
 
+@RequiredArgsConstructor
 public class ItemStorageLoader {
-    Storinator storinator;
 
-    public ItemStorageLoader(Storinator storinator) {
-        this.storinator = storinator;
-    }
+    private final Storinator storinator;
 
     public Map<String, ItemStorage> loadExistingStorages(File directory) {
         Util.createDataFolderIfNotExists(directory);
@@ -27,8 +26,7 @@ public class ItemStorageLoader {
         return storages;
     }
 
-
-    private ItemStorage getDummyStorage(){
+    private ItemStorage getDummyStorage() {
         List<MyItemStack> items = new ArrayList<>();
         var allBlocks = Material.values();
         for (int i = 0; i < 500; i++) {

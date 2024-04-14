@@ -1,19 +1,21 @@
 package storinator.storinator.data;
 
+import lombok.Getter;
+
 import java.util.Comparator;
 import java.util.List;
 
+import static storinator.storinator.data.StorageComparator.BY_COUNT;
+
+@Getter
 public class ItemStorage {
-    private List<MyItemStack> items;
-    private Comparator<MyItemStack> currentComparator;
+
+    private final List<MyItemStack> items;
+    private Comparator<MyItemStack> currentComparator = BY_COUNT.getComparator();
 
     public ItemStorage(List<MyItemStack> items) {
         this.items = items;
-        currentComparator = BY_COUNT;
-    }
-
-    public List<MyItemStack> getItems() {
-        return items;
+        sortByActiveComparator();
     }
 
     public MyItemStack getItem(int index) {
@@ -32,13 +34,9 @@ public class ItemStorage {
                 return;
             }
         }
+
         items.add(item);
         sortByActiveComparator();
-    }
-
-    public void sort(Comparator<MyItemStack> comparator) {
-        currentComparator = comparator;
-        items.sort(currentComparator);
     }
 
     public void sortByActiveComparator() {
@@ -49,6 +47,9 @@ public class ItemStorage {
         items.remove(itemStack);
     }
 
-    public static Comparator<MyItemStack> BY_COUNT = Comparator.comparing(MyItemStack::getCount);
-    public static Comparator<MyItemStack> BY_COUNT_REVERSED = BY_COUNT.reversed();
+    public void setComparator(StorageComparator comparator) {
+        currentComparator = comparator.getComparator();
+        items.sort(currentComparator);
+    }
+
 }

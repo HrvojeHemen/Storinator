@@ -20,11 +20,9 @@ import storinator.storinator.data.MyItemStack;
 import java.util.ArrayList;
 import java.util.List;
 
+import static storinator.storinator.data.StorageComparator.BY_COUNT_REVERSED;
+
 public class StorageUI implements Listener, CommandExecutor {
-    private final Storinator storinator;
-    private ItemStorage itemStorage;
-    private Inventory inventory;
-    private int currentPage;
 
     private static final String INVENTORY_NAME = "Storinator";
     private static final int PREVIOUS_PAGE_INDEX = 0;
@@ -34,6 +32,11 @@ public class StorageUI implements Listener, CommandExecutor {
     private static final int TOTAL_ROWS = 6;
     private static final int TOTAL_INVENTORY_SLOTS = ITEMS_PER_ROW * TOTAL_ROWS;
     private static final int ITEMS_PER_PAGE = ITEMS_PER_ROW * (TOTAL_ROWS - 1);
+
+    private final Storinator storinator;
+    private ItemStorage itemStorage;
+    private Inventory inventory;
+    private int currentPage;
 
     public StorageUI(Storinator storinator) {
         this.storinator = storinator;
@@ -110,7 +113,7 @@ public class StorageUI implements Listener, CommandExecutor {
                     storinator.getLogger().info(itemStorage.getItems().size() + " " + ITEMS_PER_PAGE + " " + lastPage);
                     setCurrentPage(Integer.min(currentPage + 1, lastPage));
                 }
-                case SORT_BY_COUNT_INDEX -> sortItemsByCountDesc(itemStorage);
+                case SORT_BY_COUNT_INDEX -> itemStorage.setComparator(BY_COUNT_REVERSED);
             }
         }
         //ITEM CLICKS
@@ -151,10 +154,6 @@ public class StorageUI implements Listener, CommandExecutor {
         setNavigation(inventory);
         setItems(inventory, items, index);
         player.openInventory(inventory);
-    }
-
-    private void sortItemsByCountDesc(ItemStorage itemStorage) {
-        itemStorage.sort(ItemStorage.BY_COUNT_REVERSED);
     }
 
     private void setNavigation(Inventory inventory) {
