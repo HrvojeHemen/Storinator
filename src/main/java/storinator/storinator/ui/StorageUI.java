@@ -176,9 +176,9 @@ public class StorageUI implements Listener, CommandExecutor {
             //we copy this, so we don't lose some metadata in the storage
             MyItemStack copyForUI = new MyItemStack(item);
 
-            List<Component> lore = new ArrayList<>();
+            List<Component> lore = copyForUI.lore() == null ? new ArrayList<>() : copyForUI.lore();
             lore.add(Component.text().content(item.getCount() + "").build());
-            copyForUI.lore(lore); //TODO check if there is a case where item lore exists, and this over writes is
+            copyForUI.lore(lore);
 
             inventory.setItem(startIndex++, copyForUI);
             if (startIndex >= TOTAL_INVENTORY_SLOTS) {
