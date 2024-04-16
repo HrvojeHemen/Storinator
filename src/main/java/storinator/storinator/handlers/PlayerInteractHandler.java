@@ -30,7 +30,7 @@ public class PlayerInteractHandler implements Listener {
         DataBlock dataBlock = storinator.getBlockDataManager().getDataBlock(block);
         if(dataBlock == null) return;
 
-        //TODO check if block is if a type we want, and if it has storinator-id set and then open storage
+        //TODO check if block is of a type we want, and if it has storinator-id set and then open storage
 //        if(dataBlock.getInt("test") != null) {
 //            event.setCancelled(true);
 //        }
