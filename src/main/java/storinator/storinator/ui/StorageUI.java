@@ -25,7 +25,7 @@ import java.util.List;
 import static storinator.storinator.PlayerValidator.findEmptySlot;
 import static storinator.storinator.data.StorageComparator.BY_COUNT_REVERSED;
 
-public class StorageUI implements Listener, CommandExecutor {
+public class StorageUI implements Listener {
 
     private static final String INVENTORY_NAME = "Storinator";
 
@@ -50,19 +50,13 @@ public class StorageUI implements Listener, CommandExecutor {
         Bukkit.getPluginManager().registerEvents(this, storinator);
     }
 
-    @Override
-    public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
-        if (!(sender instanceof Player player)) {
-            sender.sendMessage("This command can only be executed by a player");
-            return true;
-        }
-        String storageId = "1";
+    public void displayStorageUI(Player player, String storageId) {
+        storinator.getLogger().info("Displaying storage: " + storageId);
         setCurrentPage(0);
         itemStorage = Storinator.itemStorages.get(storageId);
         inventory = Bukkit.createInventory(player, TOTAL_INVENTORY_SLOTS, Component.text(INVENTORY_NAME + "#" + storageId + ", Page " + (currentPage + 1)));
 
         displayInventory(inventory, player, currentPage);
-        return true;
     }
 
     @EventHandler

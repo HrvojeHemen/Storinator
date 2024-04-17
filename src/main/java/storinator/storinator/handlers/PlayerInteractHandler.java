@@ -8,13 +8,16 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerInteractEvent;
 import redempt.redlib.blockdata.DataBlock;
 import storinator.storinator.Storinator;
+import storinator.storinator.ui.StorageUI;
 
 public class PlayerInteractHandler implements Listener {
 
     private final Storinator storinator;
+    private final StorageUI storageUI;
 
-    public PlayerInteractHandler(Storinator storinator) {
+    public PlayerInteractHandler(Storinator storinator, StorageUI storageUI) {
         this.storinator = storinator;
+        this.storageUI = storageUI;
         Bukkit.getPluginManager().registerEvents(this, storinator);
     }
 
@@ -26,15 +29,12 @@ public class PlayerInteractHandler implements Listener {
 
         Player player = event.getPlayer();
         Block block = event.getClickedBlock();
-
         DataBlock dataBlock = storinator.getBlockDataManager().getDataBlock(block);
-        if(dataBlock == null) return;
+        if(dataBlock == null || dataBlock.getString("storageId") == null) return;
 
-        //TODO check if block is of a type we want, and if it has storinator-id set and then open storage
-//        if(dataBlock.getInt("test") != null) {
-//            event.setCancelled(true);
-//        }
-
-        storinator.getLogger().info("Test: " + dataBlock.getInt("test"));
+        String storageId = dataBlock.getString("storageId");
+        storageUI.displayStorageUI(player, storageId);
+        event.setCancelled(true);
     }
+
 }
