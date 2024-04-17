@@ -10,18 +10,18 @@ import static storinator.storinator.data.StorageComparator.BY_COUNT;
 
 @Getter
 public class ItemStorage {
+    private static final long DEFAULT_CAPACITY = 64_000;
 
     private final List<MyItemStack> items;
+    private long capacity;
+    private long size;
     private Comparator<MyItemStack> currentComparator = BY_COUNT.getComparator();
 
 
-    public ItemStorage(){
-        this(new ArrayList<>());
-    }
-
-    public ItemStorage(List<MyItemStack> items) {
-        this.items = items;
-        sortByActiveComparator();
+    public ItemStorage() {
+        this.capacity = DEFAULT_CAPACITY;
+        this.size = 0;
+        this.items = new ArrayList<>();
     }
 
     public MyItemStack getItem(int index) {
@@ -32,7 +32,20 @@ public class ItemStorage {
         return items.subList(start, end);
     }
 
-    public void addItem(MyItemStack item) {
+    public boolean addItem(MyItemStack item, boolean checkCount) {
+        long newSize = this.size + item.getCount();
+        if (checkCount) {
+            if (newSize > this.capacity) {
+                return false;
+            }
+        }
+        this.size = newSize;
+
+        addItem(item);
+        return true;
+    }
+
+    private void addItem(MyItemStack item) {
         for (MyItemStack itemStack : items) {
             if (itemStack.isSimilar(item)) {
                 itemStack.setCount(itemStack.getCount() + item.getCount());
@@ -51,6 +64,14 @@ public class ItemStorage {
 
     public void removeItemStack(MyItemStack itemStack) {
         items.remove(itemStack);
+        this.size = this.size - itemStack.getCount();
+        sortByActiveComparator();
+    }
+
+    public void decrementItemStackCount(MyItemStack itemStack, int count) {
+        itemStack.setCount(itemStack.getCount() - count);
+        this.size = this.size - itemStack.getCount();
+        sortByActiveComparator();
     }
 
     public void setComparator(StorageComparator comparator) {

@@ -30,7 +30,7 @@ public class ItemStorageLoader {
                    MyItemStack[] itemStacks =  Util.deserializeFromBase64(data.toString());
 
                     for (MyItemStack itemStack : itemStacks) {
-                        itemStorage.addItem(itemStack);
+                        itemStorage.addItem(itemStack, false);
                     }
 
                     storages.put(file.getName(), itemStorage);
@@ -48,16 +48,18 @@ public class ItemStorageLoader {
 
     private ItemStorage getDummyStorage() {
         List<MyItemStack> items = new ArrayList<>();
+        ItemStorage itemStorage = new ItemStorage();
         var allBlocks = Material.values();
         for (int i = 0; i < 500; i++) {
             var block = allBlocks[new Random().nextInt(allBlocks.length)];
             if (block.isItem()) {
-                items.add(new MyItemStack(block, i * 10));
+                itemStorage.addItem(new MyItemStack(block, i * 10), false);
             } else {
                 i--;
             }
         }
-        return new ItemStorage(items);
+
+        return itemStorage;
     }
 
 }

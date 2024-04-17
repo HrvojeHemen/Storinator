@@ -1,6 +1,7 @@
 package storinator.storinator.ui;
 
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
@@ -25,13 +26,17 @@ import static storinator.storinator.data.StorageComparator.BY_COUNT_REVERSED;
 public class StorageUI implements Listener, CommandExecutor {
 
     private static final String INVENTORY_NAME = "Storinator";
-    private static final int PREVIOUS_PAGE_INDEX = 0;
-    private static final int NEXT_PAGE_INDEX = 1;
-    private static final int SORT_BY_COUNT_INDEX = 2;
+
     private static final int ITEMS_PER_ROW = 9;
     private static final int TOTAL_ROWS = 6;
     private static final int TOTAL_INVENTORY_SLOTS = ITEMS_PER_ROW * TOTAL_ROWS;
     private static final int ITEMS_PER_PAGE = ITEMS_PER_ROW * (TOTAL_ROWS - 1);
+
+    private static final int PREVIOUS_PAGE_INDEX = 0;
+    private static final int NEXT_PAGE_INDEX = 1;
+    private static final int SORT_BY_COUNT_INDEX = 2;
+    private static final int ITEM_COUNT_INDEX = ITEMS_PER_ROW - 1;
+
 
     private final Storinator storinator;
     private ItemStorage itemStorage;
@@ -69,8 +74,8 @@ public class StorageUI implements Listener, CommandExecutor {
         int rawSlot = event.getRawSlot();
 
         if (event.getView().getBottomInventory().equals(event.getClickedInventory())) {
-            handlePlayerInventoryClick(event, slot, rawSlot);
-            displayInventory(event.getInventory(), player, currentPage);
+            boolean refreshInventory = handlePlayerInventoryClick(event, slot, rawSlot);
+            if (refreshInventory) displayInventory(event.getInventory(), player, currentPage);
         } else if (event.getView().getTopInventory().equals(event.getClickedInventory())) {
             handleStorinatorInventoryClick(event, slot, rawSlot);
             displayInventory(event.getInventory(), player, currentPage);
@@ -94,8 +99,11 @@ public class StorageUI implements Listener, CommandExecutor {
         event.setCancelled(true);
 
         MyItemStack itemStack = new MyItemStack(itemsAtIndex);
-        itemStorage.addItem(itemStack);
-
+        boolean added = itemStorage.addItem(itemStack, true);
+        if (!added) {
+            event.setCancelled(true);
+            return false;
+        }
         playerInventory.setItem(slot, null);
         return true;
     }
@@ -133,8 +141,7 @@ public class StorageUI implements Listener, CommandExecutor {
         if (count == countPlayerGets) {
             itemStorage.removeItemStack(itemStack);
         } else {
-            itemStack.setCount(count - countPlayerGets);
-            itemStorage.sortByActiveComparator();
+            itemStorage.decrementItemStackCount(itemStack, countPlayerGets);
         }
 
         ItemStack toGivePlayer = new ItemStack(itemStack);
@@ -163,18 +170,41 @@ public class StorageUI implements Listener, CommandExecutor {
     }
 
     private void setNavigation(Inventory inventory) {
-        inventory.setItem(PREVIOUS_PAGE_INDEX, getNavigationButton("Previous Page"));
-        inventory.setItem(NEXT_PAGE_INDEX, getNavigationButton("Next Page"));
-        inventory.setItem(SORT_BY_COUNT_INDEX, getNavigationButton("Sort by count desc."));
+        inventory.setItem(PREVIOUS_PAGE_INDEX, getNavigationButton(getText("Previous Page")));
+        inventory.setItem(NEXT_PAGE_INDEX, getNavigationButton(getText("Next Page")));
+        inventory.setItem(SORT_BY_COUNT_INDEX, getNavigationButton(getText("Sort by count desc.")));
+        inventory.setItem(ITEM_COUNT_INDEX, getNavigationButton(getCapacityLabelText()));
     }
 
-    private ItemStack getNavigationButton(String text) {
+    private ItemStack getNavigationButton(Component textComponent) {
         ItemStack itemStack = new ItemStack(Material.GLASS_PANE);
         var meta = itemStack.getItemMeta();
-        meta.displayName(Component.text().content(text).build());
+        meta.displayName(textComponent);
         itemStack.setItemMeta(meta);
         return itemStack;
     }
+
+    private Component getText(String text) {
+        return Component.text(text);
+    }
+
+    private Component getCapacityLabelText() {
+        long size = itemStorage.getSize();
+        long capacity = itemStorage.getCapacity();
+        double fullness = 1.0 * size / capacity;
+        String capacityLabel = String.format("Utilization: %,d/%,d [%.2f%%]", itemStorage.getSize(), itemStorage.getCapacity(), 100.0 * fullness);
+
+        storinator.getLogger().info(fullness + " -> " + interpolateColor(fullness));
+        return Component.text(capacityLabel).color(interpolateColor(fullness));
+    }
+
+    private TextColor interpolateColor(double fullness) {
+        int r = (int) (255 * fullness);
+        int g = (int) (255 * (1 - fullness));
+
+        return TextColor.color(r, g, 0);
+    }
+
 
     private void setItems(Inventory inventory, final List<MyItemStack> items, int startIndex) {
         for (final var item : items) {
