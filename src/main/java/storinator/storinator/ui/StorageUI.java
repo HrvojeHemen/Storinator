@@ -14,6 +14,7 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
+import storinator.storinator.PlayerValidator;
 import storinator.storinator.Storinator;
 import storinator.storinator.data.ItemStorage;
 import storinator.storinator.data.MyItemStack;
@@ -21,6 +22,7 @@ import storinator.storinator.data.MyItemStack;
 import java.util.ArrayList;
 import java.util.List;
 
+import static storinator.storinator.PlayerValidator.findEmptySlot;
 import static storinator.storinator.data.StorageComparator.BY_COUNT_REVERSED;
 
 public class StorageUI implements Listener, CommandExecutor {
@@ -133,26 +135,17 @@ public class StorageUI implements Listener, CommandExecutor {
     }
 
     private void handleItemClick(InventoryClickEvent event, int rawSlot) {
-        storinator.getLogger().info("Giving player item at slot " + rawSlot);
-        MyItemStack itemStack = itemStorage.getItem(currentPage * ITEMS_PER_PAGE + rawSlot - ITEMS_PER_ROW);
-        int count = itemStack.getCount();
-        int countPlayerGets = Integer.min(itemStack.getMaxStackSize(), count);
-
-        if (count == countPlayerGets) {
-            itemStorage.removeItemStack(itemStack);
-        } else {
-            itemStorage.decrementItemStackCount(itemStack, countPlayerGets);
+        int emptyInventorySlotIndex = findEmptySlot(event.getWhoClicked());
+        if (emptyInventorySlotIndex == -1) {
+            storinator.getLogger().info("Player does not have an empty space in inventory.");
+            return;
         }
+        storinator.getLogger().info("Giving player item at slot " + rawSlot);
 
-        ItemStack toGivePlayer = new ItemStack(itemStack);
-        toGivePlayer.setAmount(countPlayerGets);
+        int itemIndex = currentPage * ITEMS_PER_PAGE + rawSlot - ITEMS_PER_ROW;
+        ItemStack toGivePlayer = itemStorage.removeFullStackOfAnItem(itemIndex);
 
-        //TODO this is behaving a bit weird, it prefers hotbar instead of inv, make it prefer inventory, index 0 is hot bar, index 9 is top left of player inv, check it out
-
-        //TODO check if player inventory has empty space for items
-
-
-        event.getView().getBottomInventory().addItem(toGivePlayer);
+        event.getWhoClicked().getInventory().setItem(emptyInventorySlotIndex, toGivePlayer);
     }
 
 

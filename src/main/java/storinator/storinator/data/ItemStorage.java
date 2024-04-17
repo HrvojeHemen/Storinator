@@ -1,6 +1,7 @@
 package storinator.storinator.data;
 
 import lombok.Getter;
+import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -62,21 +63,35 @@ public class ItemStorage {
         items.sort(currentComparator);
     }
 
-    public void removeItemStack(MyItemStack itemStack) {
-        items.remove(itemStack);
-        this.size = this.size - itemStack.getCount();
-        sortByActiveComparator();
+    public ItemStack removeFullStackOfAnItem(int index) {
+        return removeFullStackOfAnItem(items.get(index));
     }
 
-    public void decrementItemStackCount(MyItemStack itemStack, int count) {
-        itemStack.setCount(itemStack.getCount() - count);
-        this.size = this.size - itemStack.getCount();
-        sortByActiveComparator();
+    public ItemStack removeFullStackOfAnItem(MyItemStack itemStack) {
+        int countPlayerGets = removeItem(itemStack, itemStack.getMaxStackSize());
+        ItemStack toGivePlayer = new ItemStack(itemStack);
+        toGivePlayer.setAmount(countPlayerGets);
+
+        return toGivePlayer;
     }
 
     public void setComparator(StorageComparator comparator) {
         currentComparator = comparator.getComparator();
         items.sort(currentComparator);
+    }
+
+    private int removeItem(MyItemStack itemStack, int amount) {
+        int decrement = Integer.min(amount, itemStack.getCount());
+        itemStack.setCount(itemStack.getCount() - decrement);
+
+        if (itemStack.getCount() <= 0) {
+            items.remove(itemStack);
+        }
+
+        this.size -= decrement;
+        sortByActiveComparator();
+
+        return decrement;
     }
 
 }
