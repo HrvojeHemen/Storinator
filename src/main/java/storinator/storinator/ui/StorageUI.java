@@ -67,17 +67,16 @@ public class StorageUI implements Listener, CommandExecutor {
 
         int slot = event.getSlot();
         int rawSlot = event.getRawSlot();
-        boolean updated;
+
         if (event.getView().getBottomInventory().equals(event.getClickedInventory())) {
-            updated = handlePlayerInventoryClick(event, slot, rawSlot);
+            handlePlayerInventoryClick(event, slot, rawSlot);
+            displayInventory(event.getInventory(), player, currentPage);
         } else if (event.getView().getTopInventory().equals(event.getClickedInventory())) {
-            updated = handleStorinatorInventoryClick(event, slot, rawSlot);
+            handleStorinatorInventoryClick(event, slot, rawSlot);
+            displayInventory(event.getInventory(), player, currentPage);
         } else {
             storinator.getLogger().severe("Unknown inventory: " + event.getClickedInventory());
-            return;
         }
-
-        if (updated) displayInventory(event.getInventory(), player, currentPage);
     }
 
     private boolean handlePlayerInventoryClick(InventoryClickEvent event, int slot, int rawSlot) {
@@ -104,44 +103,51 @@ public class StorageUI implements Listener, CommandExecutor {
     private boolean handleStorinatorInventoryClick(InventoryClickEvent event, int slot, int rawSlot) {
         storinator.getLogger().info("Storinator inventory click");
         event.setCancelled(true);
-        // NAVIGATION BAR
         if (rawSlot < ITEMS_PER_ROW) {
-            switch (rawSlot) {
-                case PREVIOUS_PAGE_INDEX -> setCurrentPage(Integer.max(currentPage - 1, 0));
-                case NEXT_PAGE_INDEX -> {
-                    int lastPage = itemStorage.getItems().size() / ITEMS_PER_PAGE;
-                    storinator.getLogger().info(itemStorage.getItems().size() + " " + ITEMS_PER_PAGE + " " + lastPage);
-                    setCurrentPage(Integer.min(currentPage + 1, lastPage));
-                }
-                case SORT_BY_COUNT_INDEX -> itemStorage.setComparator(BY_COUNT_REVERSED);
-            }
-        }
-        //ITEM CLICKS
-        else {
-            storinator.getLogger().info("Giving player item at slot " + rawSlot);
-            MyItemStack itemStack = itemStorage.getItem(currentPage * ITEMS_PER_PAGE + rawSlot - ITEMS_PER_ROW);
-            int count = itemStack.getCount();
-            int countPlayerGets = Integer.min(itemStack.getMaxStackSize(), count);
-
-            if (count == countPlayerGets) {
-                itemStorage.removeItemStack(itemStack);
-            } else {
-                itemStack.setCount(count - countPlayerGets);
-                itemStorage.sortByActiveComparator();
-            }
-
-            ItemStack toGivePlayer = new ItemStack(itemStack.getType(), countPlayerGets);
-
-            //TODO this is behaving a bit weird, it prefers hotbar instead of inv, make it prefer inventory, index 0 is hot bar, index 9 is top left of player inv, check it out
-
-            //TODO check if player inventory has empty space for items
-
-
-            event.getView().getBottomInventory().addItem(toGivePlayer);
+            handleNavigationBarClicked(rawSlot);
+        } else {
+            handleItemClick(event, rawSlot);
         }
 
         return true;
     }
+
+    private void handleNavigationBarClicked(int rawSlot) {
+        switch (rawSlot) {
+            case PREVIOUS_PAGE_INDEX -> setCurrentPage(Integer.max(currentPage - 1, 0));
+            case NEXT_PAGE_INDEX -> {
+                int lastPage = itemStorage.getItems().size() / ITEMS_PER_PAGE;
+                storinator.getLogger().info(itemStorage.getItems().size() + " " + ITEMS_PER_PAGE + " " + lastPage);
+                setCurrentPage(Integer.min(currentPage + 1, lastPage));
+            }
+            case SORT_BY_COUNT_INDEX -> itemStorage.setComparator(BY_COUNT_REVERSED);
+        }
+    }
+
+    private void handleItemClick(InventoryClickEvent event, int rawSlot) {
+        storinator.getLogger().info("Giving player item at slot " + rawSlot);
+        MyItemStack itemStack = itemStorage.getItem(currentPage * ITEMS_PER_PAGE + rawSlot - ITEMS_PER_ROW);
+        int count = itemStack.getCount();
+        int countPlayerGets = Integer.min(itemStack.getMaxStackSize(), count);
+
+        if (count == countPlayerGets) {
+            itemStorage.removeItemStack(itemStack);
+        } else {
+            itemStack.setCount(count - countPlayerGets);
+            itemStorage.sortByActiveComparator();
+        }
+
+        ItemStack toGivePlayer = new ItemStack(itemStack);
+        toGivePlayer.setAmount(countPlayerGets);
+
+        //TODO this is behaving a bit weird, it prefers hotbar instead of inv, make it prefer inventory, index 0 is hot bar, index 9 is top left of player inv, check it out
+
+        //TODO check if player inventory has empty space for items
+
+
+        event.getView().getBottomInventory().addItem(toGivePlayer);
+    }
+
 
     private void setCurrentPage(int newCurrentPage) {
         storinator.getLogger().info("Changing current page " + currentPage + " -> " + newCurrentPage);
