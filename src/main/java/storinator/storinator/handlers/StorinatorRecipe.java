@@ -14,7 +14,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 public class StorinatorRecipe {
 
     public final static ItemStack STORINATOR_ITEM;
-    private final static String RECIPE_KEY = "chest";
+    public final static String RECIPE_KEY = "chest";
     private final static Integer STORINATOR_CUSTOM_MODEL_DATA = "STORINATOR_CUSTOM_MODEL_DATA".hashCode();
 
     private final JavaPlugin storinator;
