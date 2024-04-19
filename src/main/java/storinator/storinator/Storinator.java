@@ -6,9 +6,7 @@ import redempt.redlib.blockdata.BlockDataManager;
 import storinator.storinator.data.ItemStorage;
 import storinator.storinator.data.ItemStorageLoader;
 import storinator.storinator.data.ItemStorageSaver;
-import storinator.storinator.handlers.BlockPlaceHandler;
-import storinator.storinator.handlers.PlayerInteractHandler;
-import storinator.storinator.handlers.StorinatorRecipe;
+import storinator.storinator.handlers.*;
 import storinator.storinator.ui.CommandInventory;
 import storinator.storinator.ui.StorageUI;
 
@@ -25,7 +23,9 @@ public final class Storinator extends JavaPlugin {
 
     @Getter
     private BlockDataManager blockDataManager;
+    private BlockBreakHandler blockBreakHandler;
     private BlockPlaceHandler blockPlaceHandler;
+    private CraftHandler craftHandler;
     private PlayerInteractHandler playerInteractHandler;
     private StorinatorRecipe storinatorRecipe;
 
@@ -39,7 +39,9 @@ public final class Storinator extends JavaPlugin {
         itemStorageSaver = new ItemStorageSaver(this);
 
         storageUI = new StorageUI(this);
+        blockBreakHandler = new BlockBreakHandler(this);
         blockPlaceHandler = new BlockPlaceHandler(this);
+        craftHandler = new CraftHandler(this);
         playerInteractHandler = new PlayerInteractHandler(this, storageUI);
 
         getLogger().info("Loading storages");
