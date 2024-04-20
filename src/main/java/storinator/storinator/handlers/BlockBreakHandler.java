@@ -8,7 +8,7 @@ import org.bukkit.event.block.BlockBreakEvent;
 import redempt.redlib.blockdata.DataBlock;
 import storinator.storinator.Storinator;
 
-import static storinator.storinator.handlers.StorinatorRecipe.getStorinatorItem;
+import static storinator.storinator.blocks.StorinatorRecipe.getStorinatorItem;
 
 public class BlockBreakHandler implements Listener {
 

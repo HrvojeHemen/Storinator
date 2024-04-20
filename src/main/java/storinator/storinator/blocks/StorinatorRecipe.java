@@ -1,4 +1,4 @@
-package storinator.storinator.handlers;
+package storinator.storinator.blocks;
 
 import lombok.RequiredArgsConstructor;
 import net.kyori.adventure.text.Component;

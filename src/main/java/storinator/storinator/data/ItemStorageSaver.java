@@ -13,6 +13,7 @@ public class ItemStorageSaver {
     private final Storinator storinator;
 
     public void saveStorages(Map<String, ItemStorage> storages, File directory) {
+        storinator.getLogger().info("Saving storages");
         Util.createDataFolderIfNotExists(directory);
 
         for (Map.Entry<String, ItemStorage> entry : storages.entrySet()) {

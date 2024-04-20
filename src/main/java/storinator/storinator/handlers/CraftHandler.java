@@ -6,6 +6,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.CraftItemEvent;
 import org.bukkit.inventory.ItemStack;
 import storinator.storinator.Storinator;
+import storinator.storinator.blocks.StorinatorRecipe;
 
 public class CraftHandler implements Listener {
     private final Storinator storinator;

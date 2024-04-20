@@ -3,10 +3,12 @@ package storinator.storinator;
 import lombok.Getter;
 import org.bukkit.plugin.java.JavaPlugin;
 import redempt.redlib.blockdata.BlockDataManager;
+import storinator.storinator.blocks.StorinatorRecipe;
 import storinator.storinator.data.ItemStorage;
 import storinator.storinator.data.ItemStorageLoader;
 import storinator.storinator.data.ItemStorageSaver;
 import storinator.storinator.handlers.*;
+import storinator.storinator.tasks.StorageBackupTask;
 import storinator.storinator.ui.CommandInventory;
 import storinator.storinator.ui.StorageUI;
 
@@ -14,11 +16,14 @@ import java.util.Map;
 import java.util.Objects;
 
 public final class Storinator extends JavaPlugin {
+    public static final long SAVE_DELAY = 12_000L;
+
 
     public static Map<String, ItemStorage> itemStorages;
     private StorageUI storageUI;
 
     private ItemStorageLoader itemStorageLoader;
+    @Getter
     private ItemStorageSaver itemStorageSaver;
 
     @Getter
@@ -44,27 +49,28 @@ public final class Storinator extends JavaPlugin {
         craftHandler = new CraftHandler(this);
         playerInteractHandler = new PlayerInteractHandler(this, storageUI);
 
-        getLogger().info("Loading storages");
         itemStorages = itemStorageLoader.loadExistingStorages(this.getDataFolder());
-        getLogger().info("Loaded storages");
-
         storinatorRecipe = new StorinatorRecipe(this);
         storinatorRecipe.addRecipe();
 
         Objects.requireNonNull(getCommand("inventory")).setExecutor(new CommandInventory(this, storageUI));
+
+        new StorageBackupTask(this).runTaskTimer(this, SAVE_DELAY, SAVE_DELAY);
     }
 
     @Override
     public void onDisable() {
-        getLogger().info("Saving storages");
-        itemStorageSaver.saveStorages(itemStorages, this.getDataFolder());
+        saveStorages();
         blockDataManager.saveAndClose();
-        getLogger().info("Saved storages");
 
         storinatorRecipe.removeRecipe();
     }
 
-    public void createIfDoesNotExist(String storageId) {
+    public void saveStorages() {
+        itemStorageSaver.saveStorages(itemStorages, this.getDataFolder());
+    }
+
+    public void createStorageIfIdDoesntExist(String storageId) {
         if (itemStorages.containsKey(storageId)) {
             return;
         }
@@ -75,7 +81,7 @@ public final class Storinator extends JavaPlugin {
 
     public String createNewStorage() {
         String storageId = Integer.valueOf(itemStorages.size()).toString();
-        createIfDoesNotExist(storageId);
+        createStorageIfIdDoesntExist(storageId);
 
         return storageId;
     }

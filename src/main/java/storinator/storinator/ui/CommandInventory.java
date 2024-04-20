@@ -19,7 +19,7 @@ public class CommandInventory implements Listener, CommandExecutor {
 
     public CommandInventory(Storinator storinator, StorageUI storageUI) {
         this.storageUI = storageUI;
-        storinator.createIfDoesNotExist(INVENTORY_COMMAND_STORAGE_ID);
+        storinator.createStorageIfIdDoesntExist(INVENTORY_COMMAND_STORAGE_ID);
     }
 
     @Override

@@ -13,6 +13,8 @@ public class ItemStorageLoader {
     private final Storinator storinator;
 
     public Map<String, ItemStorage> loadExistingStorages(File directory) {
+        storinator.getLogger().info("Loading storages");
+
         Util.createDataFolderIfNotExists(directory);
         Map<String, ItemStorage> storages = new HashMap<>();
         for (File file : Objects.requireNonNull(directory.listFiles())) {

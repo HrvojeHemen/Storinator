@@ -12,8 +12,8 @@ import org.bukkit.persistence.PersistentDataType;
 import redempt.redlib.blockdata.DataBlock;
 import storinator.storinator.Storinator;
 
-import static storinator.storinator.handlers.StorinatorRecipe.RECIPE_KEY;
-import static storinator.storinator.handlers.StorinatorRecipe.STORINATOR_CUSTOM_MODEL_DATA;
+import static storinator.storinator.blocks.StorinatorRecipe.RECIPE_KEY;
+import static storinator.storinator.blocks.StorinatorRecipe.STORINATOR_CUSTOM_MODEL_DATA;
 
 public class BlockPlaceHandler implements Listener {
 
