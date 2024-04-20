@@ -76,7 +76,12 @@ public class ItemStorage {
     }
 
     public void setComparator(StorageComparator comparator) {
-        currentComparator = comparator.getComparator();
+        if(currentComparator.equals(comparator.getComparator())){
+            currentComparator = currentComparator.reversed();
+        }
+        else {
+            currentComparator = comparator.getComparator();
+        }
         items.sort(currentComparator);
     }
 

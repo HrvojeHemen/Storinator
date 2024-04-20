@@ -4,17 +4,12 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
-import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
-import org.jetbrains.annotations.NotNull;
-import storinator.storinator.PlayerValidator;
 import storinator.storinator.Storinator;
 import storinator.storinator.data.ItemStorage;
 import storinator.storinator.data.MyItemStack;
@@ -159,7 +154,7 @@ public class StorageUI implements Listener {
     private void setNavigation(Inventory inventory) {
         inventory.setItem(PREVIOUS_PAGE_INDEX, getNavigationButton(getText("Previous Page")));
         inventory.setItem(NEXT_PAGE_INDEX, getNavigationButton(getText("Next Page")));
-        inventory.setItem(SORT_BY_COUNT_INDEX, getNavigationButton(getText("Sort by count desc.")));
+        inventory.setItem(SORT_BY_COUNT_INDEX, getNavigationButton(getText("Sort by count.")));
         inventory.setItem(ITEM_COUNT_INDEX, getNavigationButton(getCapacityLabelText()));
     }
 
