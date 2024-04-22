@@ -78,6 +78,7 @@ public class StorageUI implements Listener {
     private boolean handlePlayerInventoryClick(InventoryClickEvent event, int slot, int rawSlot) {
         storinator.getLogger().info("Player inventory click");
         if (!event.isShiftClick()) {
+            event.setCancelled(true);
             return false;
         }
 
