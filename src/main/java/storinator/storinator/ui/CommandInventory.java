@@ -10,6 +10,7 @@ import org.jetbrains.annotations.NotNull;
 import storinator.storinator.Storinator;
 
 
+@Deprecated
 @RequiredArgsConstructor
 public class CommandInventory implements Listener, CommandExecutor {
 

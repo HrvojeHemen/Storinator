@@ -6,10 +6,3 @@ prefix: storinator
 authors: [ Renato, Hrvoje ]
 
 depend: [RedLib]
-
-commands:
-  inventory:
-    description: "test description"
-    usage: "/inventory"
-    permission: "op"
-    permission-message: "You do not have permission"
