@@ -7,13 +7,14 @@ import storinator.storinator.blocks.StorinatorRecipe;
 import storinator.storinator.data.ItemStorage;
 import storinator.storinator.data.ItemStorageLoader;
 import storinator.storinator.data.ItemStorageSaver;
-import storinator.storinator.handlers.*;
+import storinator.storinator.handlers.BlockBreakHandler;
+import storinator.storinator.handlers.BlockPlaceHandler;
+import storinator.storinator.handlers.CraftHandler;
+import storinator.storinator.handlers.PlayerInteractHandler;
 import storinator.storinator.tasks.StorageBackupTask;
-import storinator.storinator.ui.CommandInventory;
 import storinator.storinator.ui.StorageUI;
 
 import java.util.Map;
-import java.util.Objects;
 
 public final class Storinator extends JavaPlugin {
     public static final long SAVE_DELAY = 12_000L;
@@ -34,12 +35,10 @@ public final class Storinator extends JavaPlugin {
     private PlayerInteractHandler playerInteractHandler;
     private StorinatorRecipe storinatorRecipe;
 
-    private CommandInventory commandInventory;
-
     @Override
     public void onEnable() {
         // Plugin startup logic
-        blockDataManager = BlockDataManager.createAuto(this, this.getDataFolder().toPath().resolve("blocks.db"),true, true);
+        blockDataManager = BlockDataManager.createAuto(this, this.getDataFolder().toPath().resolve("blocks.db"), true, true);
         itemStorageLoader = new ItemStorageLoader(this);
         itemStorageSaver = new ItemStorageSaver(this);
 
@@ -52,8 +51,6 @@ public final class Storinator extends JavaPlugin {
         itemStorages = itemStorageLoader.loadExistingStorages(this.getDataFolder());
         storinatorRecipe = new StorinatorRecipe(this);
         storinatorRecipe.addRecipe();
-
-        Objects.requireNonNull(getCommand("inventory")).setExecutor(new CommandInventory(this, storageUI));
 
         new StorageBackupTask(this).runTaskTimer(this, SAVE_DELAY, SAVE_DELAY);
     }
