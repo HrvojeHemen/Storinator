@@ -9,6 +9,7 @@ import storinator.storinator.Storinator;
 import storinator.storinator.blocks.StorinatorRecipe;
 
 public class CraftHandler implements Listener {
+
     private final Storinator storinator;
 
     public CraftHandler(Storinator storinator) {
@@ -18,18 +19,21 @@ public class CraftHandler implements Listener {
 
     @EventHandler
     public void craft(CraftItemEvent event) {
-
-        ItemStack currentItem =  event.getCurrentItem();
-        if(currentItem == null || !currentItem.hasItemMeta() || !currentItem.getItemMeta().hasCustomModelData()) return;
-
-        int modelData = currentItem.getItemMeta().getCustomModelData();
-        if(modelData != StorinatorRecipe.STORINATOR_CUSTOM_MODEL_DATA) return;
-
+        if (!isStorinator(event.getCurrentItem())) {
+            return;
+        }
 
         String storageId = storinator.createNewStorage();
-
         ItemStack storinatorItem = StorinatorRecipe.getStorinatorItem(storageId);
         storinatorItem.setAmount(1);
         event.setCurrentItem(storinatorItem);
     }
+
+    private boolean isStorinator(ItemStack item) {
+            return item != null &&
+                    item.hasItemMeta() &&
+                    item.getItemMeta().hasCustomModelData() &&
+                    item.getItemMeta().getCustomModelData() == StorinatorRecipe.STORINATOR_CUSTOM_MODEL_DATA;
+    }
+
 }

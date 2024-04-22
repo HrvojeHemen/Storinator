@@ -5,6 +5,7 @@ import org.bukkit.block.Block;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
+import redempt.redlib.blockdata.BlockDataManager;
 import redempt.redlib.blockdata.DataBlock;
 import storinator.storinator.Storinator;
 
@@ -21,16 +22,40 @@ public class BlockBreakHandler implements Listener {
 
     @EventHandler
     public void onBlockBreak(BlockBreakEvent event) {
-        Block block = event.getBlock();
-        DataBlock dataBlock = storinator.getBlockDataManager().getDataBlock(block);
-        String storageId = dataBlock.getString("storageId");
-
-        if (storageId == null) {
+        if (!isStorinator(event.getBlock())) {
             return;
         }
 
+        String storageId = getStorageId(event.getBlock());
+        removeBlockFromDataManager(event.getBlock());
+        dropStorinatorItem(event, storageId);
+    }
+
+    private boolean isStorinator(Block block) {
+        DataBlock dataBlock = storinator.getBlockDataManager().getDataBlock(block, false);
+
+        return dataBlock != null && dataBlock.getString("storageId") != null;
+    }
+
+    private String getStorageId(Block block) {
+        return storinator.getBlockDataManager()
+                         .getDataBlock(block)
+                         .getString("storageId");
+    }
+
+    private void removeBlockFromDataManager(Block block) {
+        BlockDataManager dataManager = storinator.getBlockDataManager();
+        DataBlock dataBlock = dataManager.getDataBlock(block, false);
+        dataManager.remove(dataBlock);
+    }
+
+    private void dropStorinatorItem(BlockBreakEvent event, String storageId) {
         event.setDropItems(false);
-        event.getPlayer().getWorld().dropItem(block.getLocation(), getStorinatorItem(storageId));
+
+        event.getPlayer()
+                .getWorld()
+                .dropItem(event.getBlock().getLocation(),
+                          getStorinatorItem(storageId));
     }
 
 }

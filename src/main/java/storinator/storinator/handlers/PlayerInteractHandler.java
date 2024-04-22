@@ -23,18 +23,24 @@ public class PlayerInteractHandler implements Listener {
 
     @EventHandler
     public void onPlayerInteract(PlayerInteractEvent event) {
-        storinator.getLogger().info("PlayerInteractEvent");
-        if(!event.getAction().isRightClick()) return;
-        storinator.getLogger().info("RIGHT CLICK");
+        if (!isStorinator(event.getClickedBlock()) || !event.getAction().isRightClick()) {
+            return;
+        }
 
-        Player player = event.getPlayer();
-        Block block = event.getClickedBlock();
-        DataBlock dataBlock = storinator.getBlockDataManager().getDataBlock(block);
-        if(dataBlock == null || dataBlock.getString("storageId") == null) return;
-
-        String storageId = dataBlock.getString("storageId");
-        storageUI.displayStorageUI(player, storageId);
+        storageUI.displayStorageUI(event.getPlayer(), getStorageId(event.getClickedBlock()));
         event.setCancelled(true);
+    }
+
+    private boolean isStorinator(Block block) {
+        DataBlock dataBlock = storinator.getBlockDataManager().getDataBlock(block, false);
+
+        return dataBlock != null && dataBlock.getString("storageId") != null;
+    }
+
+    private String getStorageId(Block block) {
+        return storinator.getBlockDataManager()
+                         .getDataBlock(block)
+                         .getString("storageId");
     }
 
 }
