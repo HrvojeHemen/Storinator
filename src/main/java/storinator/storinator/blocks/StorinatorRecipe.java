@@ -59,7 +59,7 @@ public class StorinatorRecipe {
         ShapedRecipe recipe = new ShapedRecipe(new NamespacedKey(storinator, RECIPE_KEY), STORINATOR_ITEM);
         recipe.shape("WWW", "WAW", "WWW");
         recipe.setIngredient('W', Material.OAK_PLANKS);
-        recipe.setIngredient('A', Material.AMETHYST_SHARD);
+        recipe.setIngredient('A', Material.IRON_BLOCK);
 
         return recipe;
     }
