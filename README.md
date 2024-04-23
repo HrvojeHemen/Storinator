@@ -10,9 +10,11 @@ Introducing Storinator, the quintessential solution for Minecraft storage woes! 
 - **Organizational Mastery:** Customize and categorize your storage with ease, ensuring efficient item management.
 - **Intuitive Interface:** Navigate through your expanded inventory effortlessly with an intuitive and user-friendly interface.
 - **Seamless Integration:** Storinator seamlessly integrates into existing gameplay mechanics, ensuring compatibility with various Minecraft environments.
+
 **Crafting Recipe:**
 
 To craft the Storinator, arrange an iron block surrounded by oak planks in a crafting table.
+![Screenshot from 2024-04-23 14-01-21](https://github.com/HrvojeHemen/Storinator/assets/55023358/ca8cb20e-578c-4a34-bc48-ca346522eca5)
 
 **Usage:**
 
@@ -22,5 +24,8 @@ To craft the Storinator, arrange an iron block surrounded by oak planks in a cra
 **Capacity:**
 
 The Storinator boasts a whopping capacity of 64,000 items. Stay tuned for modular upgrades coming in the future, offering even greater storage possibilities!
+
+**Dependencies:**
+- Storinator utilizes RedLib, available for download at this link: [RedLib](https://github.com/boxbeam/RedLib/releases)
 
 **Experience Storinator today and embark on a journey of inventory liberation in the boundless realms of Minecraft!**
